@@ -27,7 +27,7 @@ SOFTWARE.
 from PyQt5.QtCore import QObject, pyqtSignal, pyqtSlot, QJsonValue, QThread
 import requests
 import platform
-import datetime
+import datetime as dt
 import os
 import time
 
@@ -101,10 +101,13 @@ class UpdateChecker(QObject):
         response = requests.get(self.gitHubApiUrl)
         if response.status_code == 200:
             infos = response.json()
-            # Parsing publish date
-            infos["published_at"] = datetime.datetime.strptime(
-                infos["published_at"], "%Y-%m-%dT%XZ"
-            ).strftime("%d/%m/%Y")
+            # Parsing publish date 2023-03-01T00:41:13Z
+            try:
+                infos["published_at"] = dt.datetime.strptime(
+                    infos["published_at"], r"%Y-%m-%dT%XZ"
+                ).strftime("%d/%m/%Y")
+            except Exception:
+                infos["published_at"] = dt.datetime.now().strftime(r"%d/%m/%Y")
 
             version = infos["tag_name"]
             if tuple(map(int, (version.split(".")))) > tuple(

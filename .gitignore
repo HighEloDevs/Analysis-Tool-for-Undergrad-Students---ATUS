@@ -6,6 +6,7 @@ env
 env2
 .env
 .venv
+.env38
 *~
 *.autosave
 *.a

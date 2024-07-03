@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from atus.src.Model import Model
 from atus.src.DataHandler import DataHandler
 from atus.src.MessageHandler import MessageHandler
