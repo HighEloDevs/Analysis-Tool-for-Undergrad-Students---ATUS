@@ -5,7 +5,7 @@ Primeiramente, mudar a versão no version.txt e no createInstaller.iss
 ## Windows
 Criar o executável:
 
-pyinstaller .\setup.spec --upx-dir upx --noconfirm -F --clean
+pyinstaller .\setup.spec --upx-dir upx --noconfirm --clean
 
 Criar o instalador:
 
