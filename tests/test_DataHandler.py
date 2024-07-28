@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from atus.src.DataHandler import DataHandler
 import pytest
 from unittest.mock import patch, MagicMock
@@ -45,7 +47,11 @@ class TestDataHandler:
                 f.write("1,2,3,4\n5,6,7,8\n9,10,11,12")
             data_handler._read_csv(data_path)
         df = pd.DataFrame(
-            [["1", "2", "3", "4"], ["5", "6", "7", "8"], ["9", "10", "11", "12"]],
+            [
+                ["1", "2", "3", "4"],
+                ["5", "6", "7", "8"],
+                ["9", "10", "11", "12"],
+            ],
             columns=["x", "y", "sy", "sx"],
         )
         pd.testing.assert_frame_equal(data_handler._df, df)
@@ -76,7 +82,11 @@ class TestDataHandler:
                 f.write("1\t2\t3\t4\n5\t6\t7\t8\n9\t10\t11\t12")
             data_handler._read_tsv_txt(data_path)
         df = pd.DataFrame(
-            [["1", "2", "3", "4"], ["5", "6", "7", "8"], ["9", "10", "11", "12"]],
+            [
+                ["1", "2", "3", "4"],
+                ["5", "6", "7", "8"],
+                ["9", "10", "11", "12"],
+            ],
             columns=["x", "y", "sy", "sx"],
         )
         pd.testing.assert_frame_equal(data_handler._df, df)
@@ -98,7 +108,11 @@ class TestDataHandler:
                 f.write("1 2 3 4\n5 6 7 8\n9 10 11 12")
             data_handler._read_tsv_txt(data_path)
         df = pd.DataFrame(
-            [["1", "2", "3", "4"], ["5", "6", "7", "8"], ["9", "10", "11", "12"]],
+            [
+                ["1", "2", "3", "4"],
+                ["5", "6", "7", "8"],
+                ["9", "10", "11", "12"],
+            ],
             columns=["x", "y", "sy", "sx"],
         )
         pd.testing.assert_frame_equal(data_handler._df, df)
@@ -146,7 +160,10 @@ class TestDataHandler:
     def test_comma_to_dot(self, data_handler: DataHandler):
         columns = ["x", "y", "sy", "sx"]
         test_data = [["1,1", "2,2", "3,3", "4,4"], ["5,5", "6,6", "7,7", "8,8"]]
-        expected_data = [["1.1", "2.2", "3.3", "4.4"], ["5.5", "6.6", "7.7", "8.8"]]
+        expected_data = [
+            ["1.1", "2.2", "3.3", "4.4"],
+            ["5.5", "6.6", "7.7", "8.8"],
+        ]
         test_df = pd.DataFrame(test_data, columns=columns)
         expected = pd.DataFrame(expected_data, columns=columns)
         result = data_handler._comma_to_dot(test_df)
@@ -181,7 +198,12 @@ class TestDataHandler:
         [
             (
                 ["x"],
-                {"x": [0.0, 1.0], "y": [1, 5], "sy": [0.0, 0.0], "sx": [0.0, 0.0]},
+                {
+                    "x": [0.0, 1.0],
+                    "y": [1, 5],
+                    "sy": [0.0, 0.0],
+                    "sx": [0.0, 0.0],
+                },
                 False,
                 False,
             ),
@@ -199,12 +221,12 @@ class TestDataHandler:
         has_sx,
         has_sy,
     ):
-
         data_handler._df = four_columns_df[input_columns]
         data_handler._data_json = deepcopy(data_handler._df)
-        data_handler._df, data_handler._data_json = data_handler._to_check_columns(
-            data_handler._df, data_handler._data_json
-        )
+        (
+            data_handler._df,
+            data_handler._data_json,
+        ) = data_handler._to_check_columns(data_handler._df, data_handler._data_json)
         expected_df = deepcopy(four_columns_df)
 
         for col in other_columns.keys():
@@ -272,9 +294,11 @@ class TestDataHandler:
     @patch("atus.src.DataHandler.DataHandler._read_csv")
     @patch("atus.src.DataHandler.DataHandler._read_tsv_txt")
     def test_load_by_data_path(
-        self, mock_tsv: MagicMock, mock_csv: MagicMock, data_handler: DataHandler
+        self,
+        mock_tsv: MagicMock,
+        mock_csv: MagicMock,
+        data_handler: DataHandler,
     ):
-
         test_string = "arquivo.csv"
         data_handler._load_by_data_path(test_string)
         mock_csv.assert_called_once()
@@ -314,13 +338,24 @@ class TestDataHandler:
     @pytest.mark.parametrize(
         "data_test, data_expected",
         [
-            ([["a", "b", "c", "d"], ["1", "2", "3", "4"]], [[1.0, 2.0, 3.0, 4.0]]),
             (
-                [["a", "b", "c", "d"], ["5", "6", "7", "8"], ["5", "6", "7", "d"]],
+                [["a", "b", "c", "d"], ["1", "2", "3", "4"]],
+                [[1.0, 2.0, 3.0, 4.0]],
+            ),
+            (
+                [
+                    ["a", "b", "c", "d"],
+                    ["5", "6", "7", "8"],
+                    ["5", "6", "7", "d"],
+                ],
                 [[5.0, 6.0, 7.0, 8.0]],
             ),
             (
-                [["a", "b", "c", "d"], ["5", "6", "7", "8"], ["a", "b", "c", "d"]],
+                [
+                    ["a", "b", "c", "d"],
+                    ["5", "6", "7", "8"],
+                    ["a", "b", "c", "d"],
+                ],
                 [[5.0, 6.0, 7.0, 8.0]],
             ),
             (
@@ -377,10 +412,22 @@ class TestDataHandler:
     @pytest.mark.parametrize(
         "clipboardText_bottom, data_expected",
         [
-            ("a\tb\tc\td\n5\t6\t7\t8", [["1", "2", "3", "4"], ["5", "6", "7", "8"]]),
-            ("1\tb\tc\t1\n5\t6\t7\t8", [["1", "2", "3", "4"], ["5", "6", "7", "8"]]),
-            ("1\tb\tc\t1\n5\t6\t7\t8", [["1", "2", "3", "4"], ["5", "6", "7", "8"]]),
-            ("1\tb\tc\t1\n5\t6\t7", [["1", "2", "3", "4"], ["5", "6", "7", "0"]]),
+            (
+                "a\tb\tc\td\n5\t6\t7\t8",
+                [["1", "2", "3", "4"], ["5", "6", "7", "8"]],
+            ),
+            (
+                "1\tb\tc\t1\n5\t6\t7\t8",
+                [["1", "2", "3", "4"], ["5", "6", "7", "8"]],
+            ),
+            (
+                "1\tb\tc\t1\n5\t6\t7\t8",
+                [["1", "2", "3", "4"], ["5", "6", "7", "8"]],
+            ),
+            (
+                "1\tb\tc\t1\n5\t6\t7",
+                [["1", "2", "3", "4"], ["5", "6", "7", "0"]],
+            ),
             ("Neymar", [["1", "2", "3", "4"]]),
         ],
     )
@@ -478,7 +525,12 @@ class TestDataHandler:
         ],
     )
     def test_load_data_bottom_uncertainty_with_zeros(
-        self, data_top, clipboardText_bottom, has_sy, has_sx, data_handler: DataHandler
+        self,
+        data_top,
+        clipboardText_bottom,
+        has_sy,
+        has_sx,
+        data_handler: DataHandler,
     ):
         data_handler.load_data(df_array=data_top)
         data_handler._load_data_bottom(clipboardText_bottom)
